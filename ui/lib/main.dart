@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -154,7 +155,7 @@ class _ChatHomeState extends State<ChatHome> with SingleTickerProviderStateMixin
               Expanded(
                 child: Stack(
                   children: [
-                    Positioned.fill(child: _BlackHoleCanvas(animation: _blackHoleController)),
+                    Positioned.fill(child: _EnergyOrb(animation: _blackHoleController)),
                     if (!_isChatOpen) _buildChatTrigger(),
                     Positioned(
                       left: 32,
@@ -372,50 +373,141 @@ class ChatMessage {
   const ChatMessage({required this.role, required this.content});
 }
 
-class _BlackHoleCanvas extends StatelessWidget {
-  const _BlackHoleCanvas({required this.animation});
+class _EnergyOrb extends StatelessWidget {
+  const _EnergyOrb({required this.animation});
 
   final Animation<double> animation;
-  static const _imageUrl =
-      'https://images.unsplash.com/photo-1453168117964-71a63f0ed1c4?auto=format&fit=crop&w=900&q=80';
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: animation,
-      builder: (context, child) {
-        return Transform.rotate(
-          angle: animation.value * 2 * math.pi,
-          child: child,
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: RadialGradient(
-            colors: [Colors.deepPurple.shade900, Colors.black],
-            stops: const [0.0, 1.0],
-          ),
-        ),
-        child: Center(
-          child: Container(
-            width: 320,
-            height: 320,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              image: const DecorationImage(
-                image: NetworkImage(_imageUrl),
-                fit: BoxFit.cover,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.deepPurpleAccent.withOpacity(0.6),
-                  blurRadius: 40,
-                  spreadRadius: 10,
+    const baseSize = 340.0;
+    const outerGlowRadius = baseSize + 160;
+    return Center(
+      child: AnimatedBuilder(
+        animation: animation,
+        builder: (context, child) {
+          final pulse = (math.sin(animation.value * 2 * math.pi) + 1) / 2;
+          final angle = animation.value * 2 * math.pi;
+          final flameTheta = angle * 1.8;
+          final flameOffset = Offset(math.cos(flameTheta) * 48, math.sin(flameTheta) * 10);
+          return Stack(
+            alignment: Alignment.center,
+            children: [
+              Transform.rotate(
+                angle: angle * 0.25,
+                child: Container(
+                  width: outerGlowRadius,
+                  height: outerGlowRadius,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        Color(0xFF0C1F48).withOpacity(0.7 + pulse * 0.2),
+                        Colors.transparent,
+                      ],
+                      stops: const [0.0, 1.0],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0xFF1D4DE2).withOpacity(0.35 + pulse * 0.2),
+                        blurRadius: 120 + pulse * 40,
+                        spreadRadius: 28,
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ),
-        ),
+              ),
+              Transform.rotate(
+                angle: angle * 0.7,
+                child: Container(
+                  width: baseSize + 80,
+                  height: baseSize + 80,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const SweepGradient(
+                      colors: [
+                        Colors.transparent,
+                        Color(0xFF1D3F75),
+                        Color(0xFF0A1F3F),
+                        Colors.transparent,
+                      ],
+                      stops: [0.0, 0.25, 0.6, 1.0],
+                      tileMode: TileMode.clamp,
+                    ),
+                  ),
+                ),
+              ),
+              Transform.rotate(
+                angle: angle * 0.35,
+                child: Container(
+                  width: baseSize + 40,
+                  height: baseSize + 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0xFF0E255C).withOpacity(0.4 + pulse * 0.25),
+                        blurRadius: 60 + pulse * 25,
+                        spreadRadius: 18,
+                      ),
+                    ],
+                    gradient: RadialGradient(
+                      colors: [
+                        Colors.transparent,
+                        Color(0xFF0D1F46).withOpacity(0.75),
+                        Colors.transparent,
+                      ],
+                      stops: const [0.0, 0.5, 1.0],
+                    ),
+                  ),
+                ),
+              ),
+              Transform.rotate(
+                angle: angle * 0.9,
+                child: Container(
+                  width: baseSize,
+                  height: baseSize,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const RadialGradient(
+                      colors: [
+                        Color(0xFF0A1B3A),
+                        Color(0xFF0F2247),
+                        Color(0xFF020316),
+                      ],
+                      stops: [0.0, 0.45, 1.0],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0xFF2EE5FF).withOpacity(0.4 + pulse * 0.15),
+                        blurRadius: 25 + pulse * 20,
+                        spreadRadius: 12,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Transform.rotate(
+                angle: angle,
+                child: Container(
+                  width: baseSize,
+                  height: baseSize,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: SweepGradient(
+                      colors: [
+                        Colors.transparent,
+                        Color(0xFF2AA6FF).withOpacity(0.35 + pulse * 0.25),
+                        Colors.transparent,
+                      ],
+                      stops: const [0.0, 0.45, 1.0],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
