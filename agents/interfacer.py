@@ -1,34 +1,13 @@
+import ast
+import json
 import ollama
-from .tools import (
-    coder_tools as _coder_tools,
-    interfacer_tools as _interfacer_tools,
-)
-from .tools.registry import get_tools_for_agent
+from .agent import Agent
+from .prompt_templates.interfacer_prompt import PROMPT as INTERFACER_PROMPT
+from .utils.message_utils import prepare_messages
+from .utils.tool_parser import parse
 
-class Interfacer:
+
+class Interfacer(Agent):
     def __init__(self):
-        self.model_name = "gemma3:1b"
-        self.tools = get_tools_for_agent("interfacer")
-        self.tool_specs = [
-            {
-                "name": name,
-                "description": tool.__doc__ or "agent helper",
-                "callable": tool,
-            }
-            for name, tool in self.tools.items()
-        ]
-    def chat(self, messages: list[dict], stream: bool = False):
-        if stream:
-            return ollama.chat(
-                model=self.model_name,
-                messages=messages,
-                tools=self.tool_specs,
-                stream=True,
-            )
-        else:
-            return ollama.chat(
-                model=self.model_name,
-                messages=messages,
-                tools=self.tool_specs,
-            )
-
+        super().__init__(model_name="qwen2.5:1.5b", agent_name="interfacer", agent_prompt=INTERFACER_PROMPT)
+        self.decision_tree = None 

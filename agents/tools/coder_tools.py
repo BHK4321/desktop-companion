@@ -17,7 +17,6 @@ def write_interfacer_tools(content: str) -> None:
     """Overwrite interfacer_tools.py with new content."""
     INTERFACER_TOOLS_PATH.write_text(content, encoding="utf-8")
 
-
 @register_tool("coder", "replace_in_interfacer_tools")
 def replace_in_interfacer_tools(target: str, replacement: str) -> str:
     """Replace the first occurrence of <target> with <replacement> and persist the change."""

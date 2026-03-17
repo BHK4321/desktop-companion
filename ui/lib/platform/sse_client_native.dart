@@ -24,8 +24,12 @@ Future<void> subscribeToSse(
       if (payload == '[DONE]') break;
       try {
         final chunk = jsonDecode(payload) as Map<String, dynamic>;
-        final content = chunk['content'] as String? ?? '';
-        if (content.isEmpty) continue;
+        final possibleContent = chunk['content'] as String?;
+        final nestedPayload = chunk['payload'] as Map<String, dynamic>?;
+        final content = possibleContent?.isNotEmpty == true
+            ? possibleContent
+            : nestedPayload?['content'] as String?;
+        if (content == null || content.isEmpty) continue;
         onChunk(content);
       } catch (_) {
         // ignore malformed payloads

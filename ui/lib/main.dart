@@ -198,7 +198,7 @@ class _ChatHomeState extends State<ChatHome> with SingleTickerProviderStateMixin
       child: Column(
         children: [
           const Text(
-            'Orbiting Chat',
+            'Chat',
             style: TextStyle(fontSize: 22, letterSpacing: 1.4, fontWeight: FontWeight.w600),
           ),
           if (_isSending)
@@ -290,7 +290,7 @@ class _ChatHomeState extends State<ChatHome> with SingleTickerProviderStateMixin
             enabled: !_isSending,
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
-              hintText: 'Ask the black hole anything...',
+              hintText: 'Type your message...',
               hintStyle: TextStyle(color: Colors.white54),
               filled: true,
               fillColor: Colors.white10,
